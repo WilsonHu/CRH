@@ -1,282 +1,490 @@
-<template xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
-    <div>
-        <el-col :span="24" class="breadcrumb-container">
-            <div class="title">系统管理 / 部门管理</div>
-        </el-col>
-        <el-col class="well well-lg" style="background-color: white;">
+<template xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml" >
+    <div >
+        <el-col :span="24" class="breadcrumb-container" >
+            <div class="title" >系统管理 / 部门管理</div >
+        </el-col >
+        <el-col class="well well-lg" style="background-color: white;" >
 
             <el-row >
-                <el-col :span="3">
+                <el-col :span="3" >
                     <div style="margin-bottom: 10px; font-size: 16px"
-                         class="parentPart">{{partInfo.part_id}} {{partInfo.name}}</div>
-                    <ul v-show="partInfo.sub_parts.length > 0" style="margin-left: -20px">
+                         class="parentPart" >{{partInfo.department_no}} {{partInfo.department_name}}</div >
+                    <ul v-show="partInfo.sub_parts.length > 0" style="margin-left: -20px" >
                         <li v-for=" (sub, index) in partInfo.sub_parts"
-                            style="list-style-type: none; font-size: 15px; margin-top: 10px">{{sub.part_id}} {{sub.name}}
-                        </li>
-                    </ul>
-                </el-col>
-                <el-col :span="21">
-                    <el-form :model="filter"  label-position="right" label-width="60px" >
-                        <el-col :span="5">
-                            <el-form-item label="姓名:">
-                                <el-input  v-model="filter.name" auto-complete="off" ></el-input >
+                            style="list-style-type: none; font-size: 15px; margin-top: 10px" >{{sub.department_no}} {{sub.department_name}}
+                        </li >
+                    </ul >
+                </el-col >
+                <el-col :span="21" >
+                    <el-form :model="filters" label-position="right" label-width="60px" >
+                        <el-col :span="5" >
+                            <el-form-item label="编号:" >
+                                <el-input v-model.trim="filters.department_no" auto-complete="off" ></el-input >
                             </el-form-item >
-                        </el-col>
-                        <el-col :span="5" style="margin-left: 50px">
-                            <el-form-item label="部门:"  >
-                                <el-input v-model="filter.part" auto-complete="off" ></el-input >
+                        </el-col >
+                        <el-col :span="5" style="margin-left: 50px" >
+                            <el-form-item label="部门:" >
+                                <el-input v-model.trim="filters.department_name" auto-complete="off" ></el-input >
                             </el-form-item >
-                        </el-col>
-                    </el-form>
-                    <el-col :span="3" style="margin-left: 25px">
+                        </el-col >
+                    </el-form >
+                    <el-col :span="3" style="margin-left: 25px" >
                         <el-button
-                                icon="search"
-                                size="normal"
-                                type="primary"
-                                @click="search">搜索</el-button>
-                    </el-col>
-                    <div align="right">
+		                        icon="search"
+		                        size="normal"
+		                        type="primary"
+		                        @click="search" >搜索</el-button >
+                    </el-col >
+                    <div align="right" >
                         <el-button
-                                icon="plus"
-                                size="normal"
-                                type="primary"
-                                @click="handleAdd">部门</el-button>
-                    </div>
+		                        icon="plus"
+		                        size="normal"
+		                        type="primary"
+		                        @click="handleAdd" >部门</el-button >
+                    </div >
 
                     <el-table
-                            :data="tableData"
-                            border
-                            style="width: 100%;">
+		                    :data="tableData"
+		                    border
+		                    style="width: 100%;" >
                         <el-table-column
-                                width="80"
-                                prop="id"
-                                label="序号">
-                        </el-table-column>
+		                        width="80"
+		                        prop="id"
+		                        label="序号" >
+                        </el-table-column >
                         <el-table-column
-                                prop="part_num"
-                                label="部门编号">
-                        </el-table-column>
+		                        prop="department_no"
+		                        label="部门编号" >
+                        </el-table-column >
 
                         <el-table-column
-                                prop="part_name"
-                                label="部门名称">
-                        </el-table-column>
+		                        prop="department_name"
+		                        label="部门名称" >
+                        </el-table-column >
                         <el-table-column
-                                prop="remark"
-                                label="备注">
-                        </el-table-column>
+		                        prop="comment"
+		                        label="备注" >
+                        </el-table-column >
 
-                        <el-table-column label="操作" width="150">
-                            <template scope="scope">
+                        <el-table-column label="操作" width="150" >
+                            <template scope="scope" >
                                 <el-button
-                                        size="small"
-                                        type="primary"
-                                        @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+		                                :disabled="scope.row.id==1"
+		                                size="small"
+		                                type="primary"
+		                                @click="handleEdit(scope.$index, scope.row)" >编辑</el-button >
                                 <el-button
-                                        size="small"
-                                        type="danger"
-                                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                    <div class="block" style="text-align: center; margin-top: 20px">
+		                                :disabled="scope.row.id==1"
+		                                size="small"
+		                                type="danger"
+		                                @click="handleDelete(scope.$index, scope.row)" >删除</el-button >
+                            </template >
+                        </el-table-column >
+                    </el-table >
+                    <div class="block" style="text-align: center; margin-top: 20px" >
                         <el-pagination
-                                @size-change="handleSizeChange"
-                                @current-change="handleCurrentChange"
-                                :current-page="currentPage"
-                                :page-size="pageSize"
-                                layout="prev, pager, next, jumper"
-                                :total="100">
-                        </el-pagination>
-                    </div>
-                </el-col>
-            </el-row>
-        </el-col>
-        <el-dialog title="增加部门" v-model="addDialogVisible" size="tiny">
-            <el-form :model="form">
-                <el-form-item label="所属部门：" :label-width="formLabelWidth">
+		                        @size-change="handleSizeChange"
+		                        @current-change="handleCurrentChange"
+		                        :current-page="currentPage"
+		                        :page-size="pageSize"
+		                        layout="prev, pager, next, jumper"
+		                        :total="totalRecords" >
+                        </el-pagination >
+                    </div >
+                </el-col >
+            </el-row >
+        </el-col >
+        <el-dialog title="增加部门" v-model="addDialogVisible" size="tiny" >
+            <el-form :model="form" >
+                <el-form-item label="所属部门：" :label-width="formLabelWidth" >
                     <el-select v-model="form.part_belong" style="width: 100%" >
                         <el-option
-                            v-bind:value="partInfo.part_id"
-                            v-bind:label="partInfo.name">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="部门编号：" :label-width="formLabelWidth">
-                    <el-input v-model="form.part_num" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="部门名称：" :label-width="formLabelWidth">
-                    <el-input v-model="form.part_name"></el-input>
-                </el-form-item>
-                <el-form-item label="备注：" :label-width="formLabelWidth">
-                    <el-input v-model="form.remark"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="addDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="addDialogVisible = false">确 定</el-button>
-            </div>
-        </el-dialog>
+		                        v-bind:value="partInfo.department_no"
+		                        v-bind:label="partInfo.department_name" >
+                        </el-option >
+                    </el-select >
+                </el-form-item >
+                <el-form-item label="部门编号：" :label-width="formLabelWidth" >
+                    <el-input v-model.trim="form.department_no" auto-complete="off" @change="onChange" ></el-input >
+                </el-form-item >
+                <el-form-item label="部门名称：" :label-width="formLabelWidth" >
+                    <el-input v-model.trim="form.department_name" @change="onChange" ></el-input >
+                </el-form-item >
+                <el-form-item label="备注：" :label-width="formLabelWidth" >
+                    <el-input v-model.trim="form.comment" @change="onChange" ></el-input >
+                </el-form-item >
+            </el-form >
+	        <el-alert v-if="isError" style="margin-top: 10px;padding: 5px;background-color: #ff9999"
+	                  :title="errorMsg"
+	                  type="error"
+	                  :closable="false"
+	                  show-icon >
+            </el-alert >
+            <div slot="footer" class="dialog-footer" >
+                <el-button @click="addDialogVisible = false" >取 消</el-button >
+                <el-button type="primary" @click="onAdd" >确 定</el-button >
+            </div >
+        </el-dialog >
 
-        <el-dialog title="编辑部门" v-model="modifyDialogVisible" size="tiny">
-            <el-form :model="modifyForm">
-                <el-form-item label="所属部门：" :label-width="formLabelWidth">
-                    <el-select v-model="modifyForm.part_belong"  style="width: 100%" >
+        <el-dialog title="编辑部门" v-model="modifyDialogVisible" size="tiny" >
+            <el-form :model="modifyForm" >
+                <el-form-item label="所属部门：" :label-width="formLabelWidth" >
+                    <el-select v-model="modifyForm.part_belong" style="width: 100%" >
                         <el-option
-                                v-bind:value="partInfo.part_id"
-                                v-bind:label="partInfo.name">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="部门编号：" :label-width="formLabelWidth">
-                    <el-input v-model="modifyForm.part_num" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="部门名称：" :label-width="formLabelWidth">
-                    <el-input v-model="modifyForm.part_name" :readonly="true"></el-input>
-                </el-form-item>
-                <el-form-item label="备注：" :label-width="formLabelWidth">
-                    <el-input v-model="modifyForm.remark"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="modifyDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="modifyDialogVisible = false">确 定</el-button>
-            </div>
-        </el-dialog>
-    </div>
-</template>
+		                        v-bind:value="partInfo.department_no"
+		                        v-bind:label="partInfo.department_name" >
+                        </el-option >
+                    </el-select >
+                </el-form-item >
+                <el-form-item label="部门编号：" :label-width="formLabelWidth" >
+                    <el-input v-model.trim="modifyForm.department_no" auto-complete="off"
+                              @change="onChange" ></el-input >
+                </el-form-item >
+                <el-form-item label="部门名称：" :label-width="formLabelWidth" >
+                    <el-input v-model.trim="modifyForm.department_name" @change="onChange" ></el-input >
+                </el-form-item >
+                <el-form-item label="备注：" :label-width="formLabelWidth" >
+                    <el-input v-model.trim="modifyForm.comment" @change="onChange" ></el-input >
+                </el-form-item >
+            </el-form >
+	        <el-alert v-if="isError" style="margin-top: 10px;padding: 5px;background-color: #ff9999"
+	                  :title="errorMsg"
+	                  type="error"
+	                  :closable="false"
+	                  show-icon >
+            </el-alert >
+            <div slot="footer" class="dialog-footer" >
+                <el-button @click="modifyDialogVisible = false" >取 消</el-button >
+                <el-button type="primary" @click="onEidt" >确 定</el-button >
+            </div >
+        </el-dialog >
 
-<script>
+	    <el-dialog title="提示" v-model="deleteConfirmVisible" size="tiny" >
+		  <span >确认要删除编号为[ <b >{{selectedItem.department_no}}</b > ]的部门吗？</span >
+		  <span slot="footer" class="dialog-footer" >
+		    <el-button @click="deleteConfirmVisible = false" >取 消</el-button >
+		    <el-button type="primary" @click="onConfirmDelete" >确 定</el-button >
+		  </span >
+		</el-dialog >
+    </div >
+</template >
+
+<script >
     import Vue from 'vue'
-
+    var _this;
     export default {
-        name:"part_manage",
-        components: {},
-        data () {
-            return {
-                tableData: [{
-                    id:1,
-                    part_num: "001001",
-                    part_name:"杭州服务部",
-                    part_belong:"001",
-                    remark:"无"
-                },
-                    {
-                        id:1,
-                        part_num: "001002",
-                        part_belong:"001",
-                        part_name:"温州服务部",
-                        remark:"无"
-                    }
-                ],
-                //分页
-                pageSize: EveryPageNum,//每一页的num
-                currentPage:1,
-                startRecord: 0,
+	    name: "part_manage",
+	    components: {},
+	    data () {
+		    _this = this;
+		    return {
+			    addUrl: HOME + "DepartmentInfo/addData",
+			    editUrl: HOME + "DepartmentInfo/modifyData",
+			    deleteUrl: HOME + "DepartmentInfo/deleteData",
+			    queryCountUrl: HOME + "DepartmentInfo/getRecordsCount",
+			    queryDataUrl: HOME + "DepartmentInfo/getRecords",
+			    isError: false,
+			    errorMsg: '',
+			    totalRecords: 0,
+			    selectedItem: {},
+			    deleteConfirmVisible: false,
 
-                //增加对话框
-                addDialogVisible: false,
-                form: {
-                    part_belong:"",
-                    part_num: "",
-                    part_name: "",
-                    remark:""
-                },
-                formLabelWidth: '100px',
+			    tableData: [],
+			    //分页
+			    pageSize: EveryPageNum,//每一页的num
+			    currentPage: 1,
+			    startRecord: 0,
 
-                //增加对话框
-                modifyDialogVisible: false,
-                modifyForm: {
-                    part_belong:"",
-                    part_num: "",
-                    part_name: "",
-                    remark:""
-                },
-                filter:{
-                    name:"",
-                    part:""
-                },
-                partInfo:{
-                    "name":"迅安",
-                    "part_id":"001",
-                    "part_belong": "",
-                    "sub_parts":[
-                        {
-                            "name":"温州服务部",
-                            "part_id":"001002",
-                            "part_belong": "001",
-                            "sub_parts":[]
-                        },
-                        {
-                            "name":"杭州服务部",
-                            "part_id":"001001",
-                            "part_belong": "001",
-                            "sub_parts":[]
-                        }
-                    ]
-                },
-            }
-        },
-        methods: {
-            handleSizeChange(val) {
+			    //增加对话框
+			    addDialogVisible: false,
+			    form: {
+				    part_belong: "",
+				    department_no: "",
+				    department_name: "",
+				    comment: ""
+			    }
+			    ,
+			    formLabelWidth: '100px',
+
+			    //增加对话框
+			    modifyDialogVisible: false,
+			    modifyForm: {
+				    id: '',
+				    part_belong: "",
+				    department_no: "",
+				    department_name: "",
+				    comment: ""
+			    }
+			    ,
+			    filters: {
+				    department_name: "",
+				    department_no: ""
+			    }
+			    ,
+			    partInfo: {}
+			    ,
+		    }
+	    },
+	    methods: {
+		    onChange: function () {
+			    if (_this.addDialogVisible) {
+				    _this.isError = _this.validateForm(_this.form);
+			    }
+			    else {
+				    _this.isError = _this.validateForm(_this.modifyForm);
+			    }
+
+		    },
+		    handleSizeChange(val) {
 //        console.log(`每页 ${val} 条`);
-            },
-            handleCurrentChange(val) {
-                this.currentPage = val;
-                this.startRecord = this.pageSize * (this.currentPage -1)
-//        this.onSearchDetailData();
+		    },
+		    handleCurrentChange(val) {
+			    this.currentPage = val;
+			    this.startRecord = this.pageSize * (this.currentPage - 1)
+			    this.onSearchDetailData();
 //        console.log(`当前页: ${val}`);
-            },
-            search() {
+		    },
+		    search() {
+			    _this.onSearchRecordCounts();
+		    },
+		    onSearchDetailData()
+		    {
+			    _this.filters.startRecord = _this.startRecord;
+			    _this.filters.pageSize = _this.pageSize;
+			    $.ajax({
+				    url: _this.queryDataUrl,
+				    type: 'POST',
+				    dataType: 'json',
+				    data: _this.filters,
+				    success: function (data) {
+					    if (data.status) {
+						    var dataList = data.info;
+						    //list.splice(0, 1);//remove 1 element from index 0
+						    _this.tableData = dataList;
+						    _this.setPartInfo(dataList);
+					    }
+				    }
+			    })
+		    },
+		    setPartInfo(list) {
+			    _this.partInfo = copyObject(list[0]);
+			    _this.partInfo.sub_parts = new Array();
+			    for (var i in list) {
+				    var item = list[i];
+				    if (parseInt(item.id) == 1) {
+					    continue;
+				    }
+				    var obj = {
+					    id: item.id,
+					    department_no: item.department_no,
+					    department_name: item.department_name,
+					    comment: item.comment,
+					    sub_parts: [],
+					    part_belong: null,
+				    };
+				    obj.part_belong = copyObject(list[0]);
+				    _this.partInfo.sub_parts.push(obj);
+			    }
+		    },
 
-            },
-            handleAdd() {
-                this.form.part_belong = this.partInfo.part_id;
-                this.addDialogVisible = true;
-            },
+		    onSearchRecordCounts()
+		    {
+			    $.ajax({
+				    url: _this.queryCountUrl,
+				    type: 'POST',
+				    dataType: 'json',
+				    data: _this.filters,
+				    success: function (data) {
+					    if (data.status) {
+						    _this.totalRecords = parseInt(data.info);
+						    _this.onSearchDetailData();
+					    }
+				    },
+			    })
+		    },
+		    getDepartNumber()
+		    {
+			    var numberList = new Array();
+			    for (var i in  _this.partInfo.sub_parts) {
+				    var item = _this.partInfo.sub_parts[i];
+				    var itemNum = parseInt(item.department_no);
+				    numberList.push(itemNum);
+			    }
+			    numberList.sort();
+			    var maxNumber = numberList[numberList.length - 1];
+			    return numberFormat(maxNumber + 1, 6);
+		    },
+		    handleAdd() {
+			    this.form.part_belong = this.partInfo.department_no;
+			    this.form.department_no = this.getDepartNumber().toString();
+			    this.form.department_name = '';
+			    this.isError = false;
+			    this.errorMsg = '';
+			    this.addDialogVisible = true;
+		    },
 
-            handleEdit(index, item) {
-                this.modifyForm = item;
-                this.modifyDialogVisible = true;
-            },
+		    handleEdit(index, item) {
+			    this.isError = false;
+			    this.errorMsg = '';
+			    this.selectedItem = item;
+			    this.modifyForm = copyObject(this.selectedItem);
+			    this.modifyForm.part_belong = this.partInfo.department_no;
+			    this.modifyDialogVisible = true;
+		    },
 
-            handleDelete(index, item) {
+		    handleDelete(index, item) {
+			    this.selectedItem = item;
+			    if (this.selectedItem) {
+				    _this.deleteConfirmVisible = true;
+			    }
+		    },
 
-            },
+		    onConfirmDelete: function () {
+			    _this.deleteConfirmVisible = false;
+			    $.ajax({
+				    url: _this.deleteUrl,
+				    type: 'POST',
+				    dataType: 'json',
+				    data: _this.selectedItem,
+				    success: function (data) {
+					    if (data.status > 0) {
+						    var index = _this.tableData.indexOf(_this.selectedItem);
+						    _this.tableData.splice(index, 1);
+						    showMessage(_this, '删除成功', 1);
+					    } else {
+						    showMessage(_this, '删除失败', 0);
+					    }
+				    },
+				    error: function (info) {
+					    showMessage(_this, '服务器访问出错', 0);
+				    }
+			    })
+		    },
 
-        },
-        computed: {
 
-        },
-        created: function () {
+		    validateForm(formObj)
+		    {
+			    var iserror = false;
+			    if (isStringEmpty(formObj.department_name)) {
+				    iserror = true;
+				    this.errorMsg = '部门不能为空！';
+			    }
+			    if (!iserror && isStringEmpty(formObj.department_no)) {
+				    iserror = true;
+				    this.errorMsg = '部门编号不能为空！';
+			    }
+			    if (!iserror && (!regIsCorrectDep(formObj.department_no)
+					    || formObj.department_no.toString().endsWith('00'))) {
+				    iserror = true;
+				    this.errorMsg = '部门编号不正确，格式为0010xx的数字！';
+			    }
+			    return iserror;
+		    },
 
-        },
-        mounted: function () {
 
-        },
+		    onAdd() {
+			    _this.isError = this.validateForm(this.form);
+			    if (!_this.isError) {
+				    $.ajax({
+					    url: _this.addUrl,
+					    type: 'POST',
+					    dataType: 'json',
+					    data: _this.form,
+					    success: function (data) {
+						    _this.isError = data.status == 0;
+						    if (!_this.isError) {
+							    _this.addDialogVisible = false;
+							    _this.onSearchRecordCounts();
+							    showMessage(_this, '添加成功', 1);
+						    } else {
+							    _this.errorMsg = '添加失败';
+							    if (!isUndefined(data.info.errorMsg)) {
+								    _this.errorMsg = data.info.errorMsg;
+							    }
+							    showMessage(_this, _this.errorMsg, 0);
+						    }
+					    },
+					    error: function (info) {
+						    _this.errorMsg = '服务器访问出错！';
+						    _this.isError = true;
+					    }
+				    })
+			    }
+
+		    },
+		    onEidt() {
+			    this.isError = this.validateForm(this.modifyForm);
+			    if (!_this.isError) {
+				    $.ajax({
+					    url: _this.editUrl,
+					    type: 'POST',
+					    dataType: 'json',
+					    data: _this.modifyForm,
+					    success: function (data) {
+						    if (!isUndefined(data.info.errorMsg)) {
+							    _this.errorMsg = data.info.errorMsg;
+							    _this.isError = true;
+							    showMessage(_this, _this.errorMsg, 0);//error
+						    }
+						    else {
+							    _this.modifyDialogVisible = false;
+							    _this.selectedItem.department_no = _this.modifyForm.department_no;
+							    _this.selectedItem.department_name = _this.modifyForm.department_name;
+							    _this.selectedItem.comment = _this.modifyForm.comment;
+
+							    showMessage(_this, '修改成功', 1);
+						    }
+					    },
+					    error: function (info) {
+						    _this.errorMsg = '服务器访问出错！';
+						    _this.isError = true;
+					    }
+				    })
+			    }
+		    },
+
+
+	    },
+	    computed: {},
+	    created: function () {
+		    this.userinfo = JSON.parse(sessionStorage.getItem('user'));
+		    if (isNull(this.userinfo)) {
+			    this.$router.push({path: '/Login'});
+			    return;
+		    }
+		    this.modifyForm.department_name = this.form.department_name = this.userinfo.department_name;
+		    this.modifyForm.department_no = this.form.department_no = this.userinfo.department_no;
+
+	    },
+	    mounted: function () {
+		    this.onSearchRecordCounts();
+	    },
     }
 
-</script>
-<style>
+</script >
+<style >
     .breadcrumb-container {
-        padding: 15px;
-        background-color: #E5E9F2;
+	    padding: 15px;
+	    background-color: #E5E9F2;
     }
+
     .title {
-        width: 200px;
-        float: left;
-        color: #475669;
-        font-weight: bold
+	    width: 200px;
+	    float: left;
+	    color: #475669;
+	    font-weight: bold
     }
+
     .parentPart {
-        width: 200px;
-        color: #475669;
-        font-size: medium;
-        font-weight: bold
+	    width: 200px;
+	    color: #475669;
+	    font-size: medium;
+	    font-weight: bold
     }
+
     .subPart {
-        width: 200px;
-        color: #475669;
-        font-weight: bold
+	    width: 200px;
+	    color: #475669;
+	    font-weight: bold
     }
-</style>
+</style >

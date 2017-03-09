@@ -6,7 +6,7 @@
 
 <script>
   import Vue from 'vue'
-
+  var _this
   export default {
     name:"search",
     components: {},
@@ -23,6 +23,7 @@
 
     },
     created: function () {
+      _this = this
 
     },
     mounted: function () {

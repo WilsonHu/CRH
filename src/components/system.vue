@@ -4,7 +4,7 @@
       <el-col>
         <el-menu :default-active="subActiveIndex" theme="dark">
 
-          <el-menu-item index="1" @click="partManage">部门管理</el-menu-item>
+          <el-menu-item index="1" @click="partManage" >部门管理</el-menu-item>
           <el-menu-item index="2" @click="userManage">用户管理</el-menu-item>
           <el-menu-item index="3" @click="taskGroupManage">作业小组管理</el-menu-item>
           <el-menu-item index="4" @click="roleManage">角色管理</el-menu-item>
@@ -20,19 +20,10 @@
 
 <script>
   import Vue from 'vue'
-  // 引用路由
-  import VueRouter from 'vue-router'
-  // 光引用不成，还得使用
+  var _this
 
-  Vue.use(VueRouter)
-  // 引用路由配置文件
-  import routes from '../config/routes'
-  // 使用配置文件规则
-  const router = new VueRouter({
-    routes
-  })
   export default {
-    name:"basic_data",
+    name:"system",
     components: {},
     data () {
       return {
@@ -41,16 +32,16 @@
     },
     methods: {
       partManage() {
-        router.push("/home/system/part_manage")
+        _this.$router.push("/home/system/part_manage")
       },
       userManage() {
-        router.push("/home/system/user_manage")
+        _this.$router.push("/home/system/user_manage")
       },
        taskGroupManage() {
-        router.push("/home/system/task_group_manage")
+         _this.$router.push("/home/system/task_group_manage")
       },
       roleManage() {
-        router.push("/home/system/role_manage")
+        _this.$router.push("/home/system/role_manage")
       }
 
     },
@@ -58,8 +49,9 @@
 
     },
     created: function () {
+      _this = this
       this.subActiveIndex = "1"
-      router.push("/home/system/part_manage")
+      _this.$router.push("/home/system/part_manage")
     },
     mounted: function () {
 

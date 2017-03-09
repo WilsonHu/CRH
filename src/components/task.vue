@@ -27,17 +27,7 @@
 
 <script>
   import Vue from 'vue'
-  // 引用路由
-  import VueRouter from 'vue-router'
-  // 光引用不成，还得使用
-
-  Vue.use(VueRouter)
-  // 引用路由配置文件
-  import routes from '../config/routes'
-  // 使用配置文件规则
-  const router = new VueRouter({
-      routes
-  })
+  var _this
   export default {
     name:"work",
     components: {},
@@ -48,22 +38,22 @@
     },
     methods: {
         addWork: function () {
-            router.push("/home/task/add_task")
+          _this.$router.push("/home/task/add_task")
         },
         manageWork: function () {
-            router.push("/home/task/manage_task")
+          _this.$router.push("/home/task/manage_task")
         },
         workOperate: function () {
-            router.push("/home/task/task_operate")
+          _this.$router.push("/home/task/task_operate")
         },
         trainData: function () {
-            router.push("/home/task/train_data")
+          _this.$router.push("/home/task/train_data")
         },
         statistics: function () {
-            router.push("/home/task/statistics")
+          _this.$router.push("/home/task/statistics")
         },
         statisticsManage: function () {
-            router.push("/home/task/statistics_manage")
+          _this.$router.push("/home/task/statistics_manage")
         }
 
     },
@@ -71,7 +61,8 @@
 
     },
     created: function () {
-        router.push("/home/task/add_task")
+      _this = this
+      _this.$router.push("/home/task/add_task")
     },
     mounted: function () {
 

@@ -94,18 +94,7 @@
 
 <script >
   import Vue from 'vue'
-  // 引用路由
-  import VueRouter from 'vue-router'
-  // 光引用不成，还得使用
-
-  Vue.use(VueRouter)
-  // 引用路由配置文件
-  import routes from '../config/routes'
-  // 使用配置文件规则
-  const router = new VueRouter({
-	  routes
-  })
-
+  var _this
 
   export default {
 	  name: "home",
@@ -128,8 +117,8 @@
 
 		  },
 		  onConfirmLogOut: function () {
-			  sessionStorage.removeItem('user');
-			  router.push("/login");
+            sessionStorage.removeItem('user');
+            _this.$router.push("/login");
 		  },
 //      workActive: function () {
 //        this.activeIndex = "1";
@@ -148,17 +137,18 @@
 			  this.activeIndex = key
 			  switch (key) {
 				  case "1":
-					  router.push("/home/task")
-					  break;
+                    _this.$router.push("/home/task")
+                    break;
 				  case "2":
-					  router.push("/home/statistic")
+                    _this.$router.push("/home/statistic")
 					  break;
 				  case "3":
-					  router.push("/home/basic_data")
-					  break;
+                    _this.$router.push("/home/basic_data")
+                    break;
 				  case "4":
-					  router.push("/home/system")
-					  break;
+                    //router.push("/home/system")
+                    _this.$router.push("/home/system")
+                    break;
 			  }
 		  }
 
@@ -166,20 +156,20 @@
 	  computed: {},
 	  created: function () {
 		  if (window.location.hash != null) {
-			  if (window.location.hash.endsWith("/home/system")) {
+			  if (window.location.hash.includes("/home/system")) {
 				  this.activeIndex = "4"
-			  } else if (window.location.hash.endsWith("/home/basic_data")) {
+			  } else if (window.location.hash.includes("/home/basic_data")) {
 				  this.activeIndex = "3"
-			  } else if (window.location.hash.endsWith("/home/statistic")) {
+			  } else if (window.location.hash.includes("/home/statistic")) {
 				  this.activeIndex = "2"
-			  } else if (window.location.hash.endsWith("/home/task")) {
+			  } else if (window.location.hash.includes("/home/task")) {
 				  this.activeIndex = "1"
 			  }
 		  }
 	  },
 	  mounted: function () {
 		  this.userinfo = JSON.parse(sessionStorage.getItem('user'));
-		  var _this = this;
+		  _this = this;
 		  setInterval(function getDate() {
 //              var date = new Date();
 //              var y = date.getFullYear();

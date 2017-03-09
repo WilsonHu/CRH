@@ -23,17 +23,8 @@
 
 <script>
     import Vue from 'vue'
-    // 引用路由
-    import VueRouter from 'vue-router'
-    // 光引用不成，还得使用
+    var _this
 
-    Vue.use(VueRouter)
-    // 引用路由配置文件
-    import routes from '../config/routes'
-    // 使用配置文件规则
-    const router = new VueRouter({
-        routes
-    })
     export default {
         name:"basic_data",
         components: {},
@@ -47,22 +38,22 @@
                 router.push("/home/basic_data/train_style")
             },
             guDao() {
-                router.push("/home/basic_data/gudao")
+              _this.$router.push("/home/basic_data/gudao")
             },
             xiuCheng() {
-                router.push("/home/basic_data/xiucheng")
+              _this.$router.push("/home/basic_data/xiucheng")
             },
             trainNum() {
-                router.push("/home/basic_data/train_num")
+              _this.$router.push("/home/basic_data/train_num")
             },
             workContent() {
-                router.push("/home/basic_data/task_content")
+              _this.$router.push("/home/basic_data/task_content")
             },
             maintain() {
-                router.push("/home/basic_data/maintain")
+              _this.$router.push("/home/basic_data/maintain")
             },
             statusReport() {
-                router.push("/home/basic_data/status_report")
+              _this.$router.push("/home/basic_data/status_report")
             }
 
         },
@@ -70,8 +61,9 @@
 
         },
         created: function () {
-            this.subActiveIndex = "1"
-            router.push("/home/basic_data/train_style")
+          _this = this
+          this.subActiveIndex = "1"
+          _this.$router.push("/home/basic_data/train_style")
         },
         mounted: function () {
 

@@ -88,7 +88,7 @@
 					  }
 				  },
 				  error: function (info) {
-					  _this.errorMsg = '服务器访问出错！';
+					  _this.errorMsg = '服务器访问出错';
 					  _this.isError = true;
 				  }
 			  })
