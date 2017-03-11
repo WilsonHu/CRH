@@ -77,17 +77,24 @@
         <el-form-item label="作业内容：" :label-width="formLabelWidth" >
           <el-input v-model="form.task_content" auto-complete="off" @change="onChange" ></el-input >
         </el-form-item >
+        <el-form-item label="部门：" :label-width="formLabelWidth" >
+
+          <el-select v-model="form.department_no" style="width: 100%">
+            <el-option
+                    v-for="item in department"
+                    v-bind:value="item.department_no"
+                    v-bind:label="item.department_name">
+            </el-option>
+          </el-select>
+        </el-form-item >
         <el-form-item label="作业统计：" :label-width="formLabelWidth" >
-          <el-select v-model="form.is_statistics" placeholder="请选择" >
+          <el-select v-model="form.is_statistics" placeholder="请选择" style="width: 100%"  >
             <el-option
 		            v-for="item in statisticOptions"
 		            :label="item.text"
 		            :value="item.value" >
             </el-option >
           </el-select >
-        </el-form-item >
-        <el-form-item label="部门：" :label-width="formLabelWidth" >
-          <el-input v-model="form.department_name" :readonly="true" @change="onChange" ></el-input >
         </el-form-item >
         <el-form-item label="颜色：" :label-width="formLabelWidth" >
         </el-form-item >
@@ -114,17 +121,23 @@
         <el-form-item label="作业内容：" :label-width="formLabelWidth" >
           <el-input v-model="modifyForm.task_content" auto-complete="off" @change="onChange" ></el-input >
         </el-form-item >
-        <el-form-item label="作业统计：" :label-width="formLabelWidth" >
-          <el-select v-model="modifyForm.is_statistics" placeholder="请选择" @change="onChange" >
+        <el-form-item label="部门：" :label-width="formLabelWidth" >
+          <el-select v-model="modifyForm.department_no" style="width: 100%" >
             <el-option
-		            v-for="item in statisticOptions"
-		            :label="item.text"
-		            :value="item.value" >
+                    v-for="item in department"
+                    v-bind:value="item.department_no"
+                    v-bind:label="item.department_name">
+            </el-option>
+          </el-select>
+        </el-form-item >
+        <el-form-item label="作业统计：" :label-width="formLabelWidth" >
+          <el-select v-model="modifyForm.is_statistics" placeholder="请选择" @change="onChange"  style="width: 100%">
+            <el-option
+                    v-for="item in statisticOptions"
+                    :label="item.text"
+                    :value="item.value" >
             </el-option >
           </el-select >
-        </el-form-item >
-        <el-form-item label="部门：" :label-width="formLabelWidth" >
-          <el-input v-model="modifyForm.department_name" :readonly="true" @change="onChange" ></el-input >
         </el-form-item >
         <el-form-item label="颜色：" :label-width="formLabelWidth" >
         </el-form-item >
@@ -166,47 +179,49 @@
 	  data () {
 		  _this = this;
 		  return {
-			  addUrl: HOME + "TaskContent/addData",
-			  editUrl: HOME + "TaskContent/modifyData",
-			  deleteUrl: HOME + "TaskContent/deleteData",
-			  queryCountUrl: HOME + "TaskContent/getRecordsCount",
-			  queryDataUrl: HOME + "TaskContent/getRecords",
-			  isError: false,
-			  errorMsg: '',
-			  filters: {},
-			  totalRecords: 0,
-			  selectedItem: {},
-			  deleteConfirmVisible: false,
+		      userInfo:{},
+            fetchSubDepartmentsURL:HOME + "DepartmentInfo/fetchSubDepartments",
+            addUrl: HOME + "TaskContent/addData",
+            editUrl: HOME + "TaskContent/modifyData",
+            deleteUrl: HOME + "TaskContent/deleteData",
+            queryCountUrl: HOME + "TaskContent/getRecordsCount",
+            queryDataUrl: HOME + "TaskContent/getRecords",
+            isError: false,
+            errorMsg: '',
+            totalRecords: 0,
+            selectedItem: {},
+            deleteConfirmVisible: false,
 
-			  tableData: [],
-			  //分页
-			  pageSize: EveryPageNum,//每一页的num
-			  currentPage: 1,
-			  startRecord: 0,
+            department:[],
+            tableData: [],
+            //分页
+            pageSize: EveryPageNum,//每一页的num
+            currentPage: 1,
+            startRecord: 0,
 
-			  //增加对话框
-			  addDialogVisible: false,
-			  form: {
-				  task_content: "",
-				  is_statistics: 1,
-				  department_no: '',
-				  department_name: "",
-				  font_color: "#000000"
-			  },
-			  formLabelWidth: '100px',
+            //增加对话框
+            addDialogVisible: false,
+            form: {
+                task_content: "",
+                is_statistics: 1,
+                department_no: '',
+                department_name: "",
+                font_color: "#000000"
+            },
+            formLabelWidth: '100px',
 
-			  //增加对话框
-			  modifyDialogVisible: false,
-			  modifyForm: {
-				  id: '',
-				  task_content: "",
-				  is_statistics: 1,
-				  department_no: '',
-				  department_name: "",
-				  font_color: "#000000"
-			  },
+            //增加对话框
+            modifyDialogVisible: false,
+            modifyForm: {
+                id: '',
+                task_content: "",
+                is_statistics: 1,
+                department_no: '',
+                department_name: "",
+                font_color: "#000000"
+            },
 
-			  statisticOptions: [],
+            statisticOptions: [],
 		  }
 	  },
 	  methods: {
@@ -227,7 +242,6 @@
 			  this.currentPage = val;
 			  this.startRecord = this.pageSize * (this.currentPage - 1);
 			  this.onSearchDetailData();
-//        console.log(`当前页: ${val}`);
 		  },
 
 		  onSearchDetailData()
@@ -236,7 +250,7 @@
 				  url: _this.queryDataUrl,
 				  type: 'POST',
 				  dataType: 'json',
-				  data: _this.filters,
+				  data:{"department_no": _this.currentDepartmentStr,"start_record":_this.startRecord, "page_size":_this.pageSize},
 				  success: function (data) {
 					  if (data.status) {
 						  _this.tableData = data.info;
@@ -250,7 +264,7 @@
 				  url: this.queryCountUrl,
 				  type: 'POST',
 				  dataType: 'json',
-				  data: this.filters,
+				  data:{"department_no": _this.currentDepartmentStr},
 				  success: function (data) {
 					  if (data.status) {
 						  _this.totalRecords = parseInt(data.info);
@@ -375,16 +389,44 @@
 			  }
 		  },
 	  },
-	  computed: {},
+	  computed: {
+        currentDepartmentStr(){
+          let $res = "";
+
+          if(this.userInfo.department_no == "001") {
+            $res = "";//返回全部
+          } else{
+            $res = this.userInfo.department_no;
+          }
+          return $res;
+        }
+      },
 	  created: function () {
-		  this.userinfo = JSON.parse(sessionStorage.getItem('user'));
-		  if (this.userinfo == null) {
-			  this.$router.push({path: '/Login'});
-			  return;
-		  }
-		  this.modifyForm.department_name = this.form.department_name = this.userinfo.department_name;
-		  this.modifyForm.department_no = this.form.department_no = this.userinfo.department_no;
-		  this.statisticOptions = getStatisticsOptions();
+        this.userInfo = JSON.parse(sessionStorage.getItem('user'));
+        if (this.userInfo != null && this.userInfo.department_no != "001") {
+          //非公司管理员
+          _this.department.push({"department_no":this.userInfo.department_no, "department_name":this.userInfo.department_name})
+        } else{
+          $.ajax({
+            url: _this.fetchSubDepartmentsURL,
+            type: 'GET',
+            success: function (data) {
+              _this.isError = data.status == 0;
+              if (!_this.isError) {
+                //TODO:
+                _this.department = data.info
+//                            console.log(data.info)
+              } else {
+                showMessage(_this, '获取服务部信息失败！', 0);
+              }
+            },
+            error: function (info) {
+              showMessage(_this, '服务器访问出错！', 0);
+            }
+          })
+        }
+        //是否统计
+        this.statisticOptions = getStatisticsOptions();
 
 	  },
 	  mounted: function () {

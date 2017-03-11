@@ -26,9 +26,8 @@
           </div>
           <div class="col-sm-3">
             <el-form-item label="股道：">
-              <el-select v-model="form.guDao" placeholder="选择股道" style="width: 222px">
-                <el-option label="股道一" value="1"></el-option>
-                <el-option label="股道二" value="2"></el-option>
+              <el-select v-model="form.station_track" placeholder="选择股道" style="width: 222px">
+                <el-option v-for="item in stationStack" :label="item.station_track_no" :value="item.station_track_no"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item  label="车次：" >
@@ -37,39 +36,47 @@
           </div>
           <div class="col-sm-3">
             <el-form-item label="车列号：">
-              <el-autocomplete
-                      v-model="form.trainLineNum"
-                      :fetch-suggestions="querySearchAsync"
-                      placeholder="搜索车列号"
-                      icon="search"
-                      @select="handleSelect"
-                      style="width: 222px;"
-              ></el-autocomplete>
+              <el-select v-model="form.train_column" filterable placeholder="搜索车列号" style="width: 222px">
+                <el-option
+                        @change="handleSelect(item)"
+                        v-for="item in trainColumn"
+                        :label="item.train_column"
+                        :value="item.id">
+                </el-option>
+              </el-select>
+              <!--<el-autocomplete-->
+                      <!--v-model="form.train_column"-->
+                      <!--placeholder="搜索车列号"-->
+                      <!--icon="search"-->
+                      <!--@select="handleSelect"-->
+                      <!--style="width: 222px;"-->
+              <!--&gt;</el-autocomplete>-->
             </el-form-item>
             <el-form-item  label="修程：">
-              <el-select v-model="form.xiuChen" placeholder="选择修程" style="width: 222px;margin-left: 13px">
-                <el-option label="修程一" value="1"></el-option>
-                <el-option label="修程二" value="2"></el-option>
+              <el-select v-model="form.repair_id" placeholder="选择修程" style="width: 222px;margin-left: 13px">
+                <el-option v-for=" item in repairInfo" :label="item.name" :value="item.id">
+
+                </el-option>
+
               </el-select>
             </el-form-item>
           </div>
           <div class="col-sm-3">
             <el-form-item label="车型：">
               <el-form-item >
-                <el-input v-model="form.trainName" style="width: 222px; margin-left: 28px" :disabled="true"></el-input>
+                <el-input v-model="form.train_model" style="width: 222px; margin-left: 28px" :disabled="true"></el-input>
               </el-form-item>
             </el-form-item>
-            <el-form-item label="车组类型：">
+            <el-form-item label="车列编组：">
               <el-form-item>
-                <el-input v-model="form.trainGroup" style="width: 222px" :disabled="true"></el-input>
+                <el-input v-model="form.train_group" style="width: 222px" :disabled="true"></el-input>
               </el-form-item>
             </el-form-item>
           </div>
         <div class="col-sm-3">
           <el-form-item  label="作业组别：" >
-            <el-select v-model="form.workGroup" placeholder="选择组别" style="width: 222px">
-              <el-option label="组别一" value="1"></el-option>
-              <el-option label="组别二" value="2"></el-option>
+            <el-select v-model="form.task_group_no" placeholder="选择组别" style="width: 222px">
+              <el-option v-for="item in taskGroup" :label="item.task_group_name" :value="item.task_group_no"></el-option>
             </el-select>
           </el-form-item>
         </div>
@@ -78,17 +85,8 @@
             <el-form-item  label="作业内容：" style="margin-left: -15px">
               <div class="panel panel-default"  style="margin-top: 10px; background-color: #F9FAFC; width: 222px;overflow-y:scroll; ">
                 <ul style="margin-left: 0px;padding-left: 0px; height: 300px" >
-                  <li v-for="(item,index) in workContent" style="list-style-type:none; margin-left: 10px">
-                    <el-checkbox  v-if="item.subs.length == 0" @change="parentCheck(item)">{{item.name}}</el-checkbox>
-                    <div v-else>
-                      <span class="glyphicon glyphicon-plus" style="margin-left: 3px; color: #20A0FF" @click="showChildren(index)"></span>
-                      <strong style="margin-left: 2px" >{{item.name}}</strong>
-                      <ul v-show="1">
-                        <li v-for="subItem in item.subs" style="list-style-type:none;">
-                          <el-checkbox style="font-weight: normal" @change="childCheck(item, subItem)">{{subItem.name}}</el-checkbox>
-                        </li>
-                      </ul>
-                    </div>
+                  <li v-for="(item,index) in taskContent" style="list-style-type:none; margin-left: 10px">
+                    <el-checkbox style="font-weight: normal" @change="parentCheck(item)">{{item.task_content}}</el-checkbox>
                   </li>
                 </ul>
               </div>
@@ -100,16 +98,7 @@
                    v-if="form.choosedContent.length > 0">
                 <ul style="margin-left: 0px;padding-left: 0px; height: 300px" >
                   <li v-for="(item,index) in form.choosedContent" style="list-style-type:none; margin-left: 10px">
-                    <div v-if="item.subs.length == 0"><strong style="margin-left: 3px">{{item.name}}</strong></div>
-                    <div v-else>
-                      <span style="margin-left: 3px; color: #20A0FF" @click="showChildren(index)"></span>
-                      <strong style="margin-left: 2px">{{item.name}}</strong>
-                      <ul v-show="1">
-                        <li v-for="(subItem,index) in item.subs" style="list-style-type:none;">
-                          <div style="font-weight: normal">{{subItem.name}}</div>
-                        </li>
-                      </ul>
-                    </div>
+                    <el-tag style="margin-left: 3px; font-size: 14px" type="primary">{{item.task_content}}</el-tag>
                   </li>
                 </ul>
               </div>
@@ -117,19 +106,6 @@
             </el-form-item>
           </div>
         </div>
-        <!--<div class="col-sm-12">-->
-          <!--<div class="col-sm-3">-->
-            <!--<el-form-item  label="其他作业：" style="margin-left: -15px">-->
-              <!--<div class="panel panel-default"  style="margin-top: 10px; background-color: #F9FAFC; width: 222px;overflow-y:scroll; ">-->
-                <!--<ul style="margin-left: 0px;padding-left: 0px; height: 100px" >-->
-                  <!--<li v-for="(item,index) in otherWork" style="list-style-type:none; margin-left: 10px">-->
-                    <!--<el-checkbox  @change="otherWorkCheck(item)" style="font-weight: normal">{{item.name}}</el-checkbox>-->
-                  <!--</li>-->
-                <!--</ul>-->
-              <!--</div>-->
-            <!--</el-form-item>-->
-          <!--</div>-->
-        <!--</div>-->
       </el-form>
       <div class="col-sm-3" style="display: inline; text-align: center">
         <el-button style="margin-right: 10px; width: 100px;">返回</el-button>
@@ -141,71 +117,68 @@
 
 <script>
   import Vue from 'vue'
-
+  let _this
   export default {
     name:"add_work",
     components: {},
     data () {
+      _this = this;
       return {
+        fetchSubDepartmentsURL:HOME + "DepartmentInfo/fetchSubDepartments",
+        fetchRepairInfoURL:HOME + "RepairInfo/getRecords",
+        fetchDepartRelInfoURL:HOME + "TaskPlan/fetchDepartRelInfo",
+        fetchTrainColumnsURL:HOME + "TrainColumn/getRecords",
+
         form: {
           user: '',
           region: '',
           date_value: Date.now(),
           time_value: "",
-          guDao: "",
+          station_track: "",
           trainNum:'2',
-          trainLineNum: "",
-          trainName: "",
-          trainGroup: "",
-          xiuChen: "",
-          workGroup: "",
+          train_column: "",
+          train_group: "",
+          repair_id: "",
+          task_group_no: "",
           choosedContent:[],
-          choosedOtherWork:[]
         },
-        trainLineNumbers: [],
-        workContent:[{"id": 1, "name":"外皮清洗", "subs": [{"id": 101, "name":"车门清洗","subs":[]},{"id": 102, "name":"车窗清洗","subs":[]}]},
-          {"id": 2, "name":"吸污", "subs":[]},
-          {"id": 3, "name":"车顶清洗", "subs": []},
-          {"id": 4, "name":"污箱清洗", "subs": [{"id": 103, "name":"污箱盖清洗","subs":[]},{"id": 104, "name":"污箱体清洗","subs":[]}]},
-          {"id": 5, "name":"构架清洗", "subs":[]},
-          {"id": 6, "name":"吸污", "subs":[]},
-          {"id": 7, "name":"车顶清洗", "subs":[]},
-          {"id": 8, "name":"污箱清洗", "subs": [{"id": 103, "name":"污箱盖清洗","subs":[]},{"id": 104, "name":"污箱体清洗","subs":[]}]},
-          {"id": 9, "name":"构架清洗", "subs":[]},
-        ],
-        otherWork:[{"id": 1, "name":"滤尘网拆装清洗"},{"id": 2, "name":"地板清洗"},{"id": 3, "name":"垃圾倾倒"}]
+        department:[],//部门
+        repairInfo:[],//修程
+        stationStack:[],//股道
+        taskGroup:[],//作业小组
+        taskContent:[],//作业内容
+        trainColumn:[],//车列号相关
       }
     },
     methods: {
-      loadAll() {
-        return [
-          { "id": "1", "train_style": "车型一", "train_group": "车组一", "value": "车列号一"},
-          { "id": "2", "train_style": "车型二", "train_group": "车组二", "value": "车列号二"},
-          { "id": "3", "train_style": "车型三", "train_group": "车组三", "value": "车列号三"},
-        ];
-      },
-      querySearchAsync(queryString, cb) {
-        var trainLineNumbers = this.trainLineNumbers;
-        var results = queryString ? trainLineNumbers.filter(this.createStateFilter(queryString)) : trainLineNumbers;
-
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          cb(results);
-        }, 1000 * Math.random());
-      },
-      createStateFilter(queryString) {
-        return (state) => {
-          return (state.value.indexOf(queryString.toLowerCase()) === 0);
-        };
-      },
+//      loadAll() {
+//        return [
+//          { "id": "1", "train_model": "车型一", "train_group": "车组一", "value": "车列号一"},
+//          { "id": "2", "train_model": "车型二", "train_group": "车组二", "value": "车列号二"},
+//          { "id": "3", "train_model": "车型三", "train_group": "车组三", "value": "车列号三"},
+//        ];
+//      },
+//      querySearchAsync(queryString, cb) {
+//        var trainLineNumbers = this.trainLineNumbers;
+//        var results = queryString ? trainLineNumbers.filter(this.createStateFilter(queryString)) : trainLineNumbers;
+//
+//        clearTimeout(this.timeout);
+//        this.timeout = setTimeout(() => {
+//          cb(results);
+//        }, 1000 * Math.random());
+//      },
+//      createStateFilter(queryString) {
+//        return (state) => {
+//          return (state.value.indexOf(queryString.toLowerCase()) === 0);
+//        };
+//      },
       handleSelect(item) {
-//        console.log(item);
-        this.form.trainName = item.train_style;
-        this.form.trainGroup = item.train_group;
+        console.log(item);
+        this.form.train_model = item.train_model;
+        this.form.train_group = item.train_group;
       },
-      showChildren(index) {
 
-      },
+      //选择作业内容
       parentCheck(item) {
         var exist = false
         for(let i=0; i< this.form.choosedContent.length; i++) {
@@ -219,43 +192,94 @@
             this.form.choosedContent.push(item)
         }
       },
-      childCheck(item,subItem) {
-          var parentExist = false
-          for(let i=0; i< this.form.choosedContent.length; i++) {
-              if(this.form.choosedContent[i].id == item.id) {
-                  parentExist = true
-                  var subExist = false;
-                  for(let j=0; j<this.form.choosedContent[i].subs.length; j++) {
-                      if(this.form.choosedContent[i].subs[j].id == subItem.id) {
-                          this.form.choosedContent[i].subs.splice(j, 1)
-                          subExist = true;
-                          break;
-                      }
-                  }
-                  if(!subExist) {
-                      this.form.choosedContent[i].subs.push(subItem);
-                  }
-                  if(this.form.choosedContent[i].subs.length == 0) {
-                      this.form.choosedContent.splice(i, 1)
-                  }
-              }
-          }
-          if(!parentExist){
-              this.form.choosedContent.push({"id":item.id, "name":item.name,"subs":[subItem]})
-          }
-      },
-      otherWorkCheck(item) {
 
-      }
+      fetchRepairInfo() {
+        $.ajax({
+          url: _this.fetchRepairInfoURL,
+          type: 'GET',
+          success: function (data) {
+            _this.isError = data.status == 0;
+            if (!_this.isError) {
+              //TODO:
+              _this.repairInfo = data.info
+            } else {
+              showMessage(_this, '获取修程信息失败！', 0);
+            }
+          },
+          error: function (info) {
+            showMessage(_this, '服务器访问出错！', 0);
+          }
+        })
+      },
+
+      fetchDepartmentRelatedInfo() {
+        $.ajax({
+          url: _this.fetchDepartRelInfoURL,
+          type: 'POST',
+          dataType: 'json',
+          data: {"department_no": _this.currentDepartmentStr},
+          success: function (data) {
+            _this.isError = data.status == 0;
+            if (!_this.isError) {
+              //TODO:
+              _this.stationStack = data.info.station_stack;
+              _this.taskGroup = data.info.task_group;
+              _this.taskContent = data.info.task_content;
+              _this.trainColumn = data.info.train_column;
+            } else {
+              showMessage(_this, '获取部门相关信息失败！', 0);
+            }
+          },
+          error: function (info) {
+            showMessage(_this, '服务器访问出错！', 0);
+          }
+        })
+      },
     },
     computed: {
+      currentDepartmentStr(){
+        let $res = "";
 
+        if(this.userInfo.department_no == "001") {
+          $res = "";//返回全部
+        } else{
+          $res = this.userInfo.department_no;
+        }
+        return $res;
+      }
     },
     created: function () {
+      this.userInfo = JSON.parse(sessionStorage.getItem('user'));
+      //根据用户获取部分信息
+      if (this.userInfo != null && this.userInfo.department_no != "001") {
+        //非公司管理员
+        this.department.push({"department_no":this.userInfo.department_no, "department_name":this.userInfo.department_name})
+      } else{
+        $.ajax({
+          url: _this.fetchSubDepartmentsURL,
+          type: 'GET',
+          success: function (data) {
+            _this.isError = data.status == 0;
+            if (!_this.isError) {
+              //TODO:
+              _this.department = data.info
+//                            console.log(data.info)
+            } else {
+              showMessage(_this, '获取服务部信息失败！', 0);
+            }
+          },
+          error: function (info) {
+            showMessage(_this, '服务器访问出错！', 0);
+          }
+        })
+      }
 
+      //获取修程信息（与部门无关）
+      this.fetchRepairInfo();
+      this.fetchDepartmentRelatedInfo()
     },
     mounted: function () {
-      this.trainLineNumbers = this.loadAll();
+//      this.trainLineNumbers = this.loadAll();
     },
   }
 

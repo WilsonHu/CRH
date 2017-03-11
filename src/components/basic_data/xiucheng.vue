@@ -214,7 +214,7 @@
 				    url: _this.queryDataUrl,
 				    type: 'POST',
 				    dataType: 'json',
-				    data: _this.filters,
+				    data:  {"start_record":_this.startRecord, "page_size":_this.pageSize},
 				    success: function (data) {
 					    if (data.status) {
 						    _this.tableData = data.info;

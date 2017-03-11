@@ -35,7 +35,7 @@
         },
         methods: {
             trainStyle() {
-                router.push("/home/basic_data/train_style")
+              _this.$router.push("/home/basic_data/train_style")
             },
             guDao() {
               _this.$router.push("/home/basic_data/gudao")

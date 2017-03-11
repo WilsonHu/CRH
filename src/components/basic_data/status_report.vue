@@ -26,8 +26,12 @@
         </el-table-column >
 
         <el-table-column
-		        prop="department_name"
+		        prop="department_id"
 		        label="部门" >
+          <template scope="scope">
+
+            <span >{{scope.row.department_no | filterDepartmentName}}</span>
+          </template>
         </el-table-column >
         <el-table-column
 		        width="120"
@@ -69,7 +73,13 @@
           <el-input v-model="form.situation_content" auto-complete="off" @change="onChange" ></el-input >
         </el-form-item >
         <el-form-item label="部门：" :label-width="formLabelWidth" >
-          <el-input v-model="form.department_name" :readonly="true" @change="onChange" ></el-input >
+          <el-select v-model="form.department_no" style="width: 100%">
+            <el-option
+                    v-for="item in department"
+                    v-bind:value="item.department_no"
+                    v-bind:label="item.department_name">
+            </el-option>
+          </el-select>
         </el-form-item >
         <el-form-item label="颜色：" :label-width="formLabelWidth" >
         </el-form-item >
@@ -95,7 +105,13 @@
           <el-input v-model="modifyForm.situation_content" auto-complete="off" @change="onChange" ></el-input >
         </el-form-item >
         <el-form-item label="部门：" :label-width="formLabelWidth" >
-          <el-input v-model="modifyForm.department_name" :readonly="true" @change="onChange" ></el-input >
+          <el-select v-model="modifyForm.department_no" style="width: 100%">
+            <el-option
+                    v-for="item in department"
+                    v-bind:value="item.department_no"
+                    v-bind:label="item.department_name">
+            </el-option>
+          </el-select>
         </el-form-item >
         <el-form-item label="颜色：" :label-width="formLabelWidth" >
         </el-form-item >
@@ -134,43 +150,46 @@
 	  data () {
 		  _this = this;
 		  return {
-			  addUrl: HOME + "SituationContent/addData",
-			  editUrl: HOME + "SituationContent/modifyData",
-			  deleteUrl: HOME + "SituationContent/deleteData",
-			  queryCountUrl: HOME + "SituationContent/getRecordsCount",
-			  queryDataUrl: HOME + "SituationContent/getRecords",
-			  isError: false,
-			  errorMsg: '',
-			  filters: {},
-			  totalRecords: 0,
-			  selectedItem: {},
-			  deleteConfirmVisible: false,
+            userInfo:{},
+            fetchSubDepartmentsURL:HOME + "DepartmentInfo/fetchSubDepartments",
+            addUrl: HOME + "SituationContent/addData",
+            editUrl: HOME + "SituationContent/modifyData",
+            deleteUrl: HOME + "SituationContent/deleteData",
+            queryCountUrl: HOME + "SituationContent/getRecordsCount",
+            queryDataUrl: HOME + "SituationContent/getRecords",
+            isError: false,
+            errorMsg: '',
+            filters: {},
+            totalRecords: 0,
+            selectedItem: {},
+            deleteConfirmVisible: false,
 
-			  tableData: [],
-			  //分页
-			  pageSize: EveryPageNum,//每一页的num
-			  currentPage: 1,
-			  startRecord: 0,
+            tableData: [],
+            department:[],
+            //分页
+            pageSize: EveryPageNum,//每一页的num
+            currentPage: 1,
+            startRecord: 0,
 
-			  //增加对话框
-			  addDialogVisible: false,
-			  form: {
-				  situation_content: "",
-				  department_no: '',
-				  department_name: "",
-				  font_color: "#000000"
-			  },
-			  formLabelWidth: '100px',
+            //增加对话框
+            addDialogVisible: false,
+            form: {
+                situation_content: "",
+                department_no: '',
+                department_name: "",
+                font_color: "#000000"
+            },
+            formLabelWidth: '100px',
 
-			  //增加对话框
-			  modifyDialogVisible: false,
-			  modifyForm: {
-				  id: '',
-				  situation_content: "",
-				  department_no: '',
-				  department_name: "",
-				  font_color: "#000000"
-			  },
+            //增加对话框
+            modifyDialogVisible: false,
+            modifyForm: {
+                id: '',
+                situation_content: "",
+                department_no: '',
+                department_name: "",
+                font_color: "#000000"
+            },
 		  }
 	  },
 	  methods: {
@@ -198,7 +217,7 @@
 				  url: _this.queryDataUrl,
 				  type: 'POST',
 				  dataType: 'json',
-				  data: _this.filters,
+				  data: {"department_no": _this.currentDepartmentStr,"start_record":_this.startRecord, "page_size":_this.pageSize},
 				  success: function (data) {
 					  if (data.status) {
 						  _this.tableData = data.info;
@@ -212,7 +231,7 @@
 				  url: this.queryCountUrl,
 				  type: 'POST',
 				  dataType: 'json',
-				  data: this.filters,
+				  data: {"department_no": _this.currentDepartmentStr},
 				  success: function (data) {
 					  if (data.status) {
 						  _this.totalRecords = parseInt(data.info);
@@ -323,6 +342,7 @@
 						  _this.modifyDialogVisible = false;
 						  _this.selectedItem.font_color = _this.modifyForm.font_color;
 						  _this.selectedItem.situation_content = _this.modifyForm.situation_content;
+						  _this.selectedItem.department_no = _this.modifyForm.department_no;
 						  showMessage(_this, '修改成功', 1);
 //						  } else {
 //							  showMessage(_this, '修改失败', 0);
@@ -337,15 +357,54 @@
 		  },
 
 	  },
-	  computed: {},
+    filters: {
+      filterDepartmentName(id) {
+        let result = ''
+        for(let i=0; i< _this.department.length; i++) {
+          if(id == _this.department[i].department_no) {
+            result = _this.department[i].department_name;
+            break;
+          }
+        }
+        return result;
+      },
+    },
+	  computed: {
+        currentDepartmentStr(){
+          let $res = "";
+
+          if(this.userInfo.department_no == "001") {
+            $res = "";//返回全部
+          } else{
+            $res = this.userInfo.department_no;
+          }
+          return $res;
+        }
+      },
 	  created: function () {
-		  this.userinfo = JSON.parse(sessionStorage.getItem('user'));
-		  if (this.userinfo == null) {
-			  this.$router.push({path: '/Login'});
-			  return;
-		  }
-		  this.modifyForm.department_name = this.form.department_name = this.userinfo.department_name;
-		  this.modifyForm.department_no = this.form.department_no = this.userinfo.department_no;
+        this.userInfo = JSON.parse(sessionStorage.getItem('user'));
+        if (this.userInfo != null && this.userInfo.department_no != "001") {
+          //非公司管理员
+          _this.department.push({"department_no":this.userInfo.department_no, "department_name":this.userInfo.department_name})
+        } else{
+          $.ajax({
+            url: _this.fetchSubDepartmentsURL,
+            type: 'GET',
+            success: function (data) {
+              _this.isError = data.status == 0;
+              if (!_this.isError) {
+                //TODO:
+                _this.department = data.info
+//                            console.log(data.info)
+              } else {
+                showMessage(_this, '获取服务部信息失败！', 0);
+              }
+            },
+            error: function (info) {
+              showMessage(_this, '服务器访问出错！', 0);
+            }
+          })
+        }
 	  },
 	  mounted: function () {
 		  this.onSearchRecordCounts();

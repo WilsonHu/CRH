@@ -256,7 +256,7 @@
                 },
                 formLabelWidth: '100px',
 
-                //增加对话框
+                //编辑对话框
                 modifyDialogVisible: false,
                 modifyForm: {
                     id:"",
@@ -287,8 +287,6 @@
                 this.currentPage = val;
                 this.startRecord = this.pageSize * (this.currentPage -1);
                 this.fetchTaskGroup();
-//        this.onSearchDetailData();
-//        console.log(`当前页: ${val}`);
             },
 
             handleEdit(index, item) {
@@ -297,7 +295,10 @@
                 this.modifyForm.department_no = item.department_no;
                 this.modifyForm.task_group_no = item.task_group_no;
                 this.modifyForm.task_group_name = item.task_group_name;
-                this.modifyForm.group_member = item.group_member;
+                //修复当group_member中内容为空时候的bug
+                if(item.group_member != "") {
+                    this.modifyForm.group_member = item.group_member;
+                }
                 this.modifyForm.comment = item.comment;
                 this.modifyDialogVisible = true;
             },

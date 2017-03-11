@@ -80,7 +80,7 @@
                 <div class="modal-body" style="font-size: 18px;font-family: FontAwesome" >
                     <!-- 加上<form>标签可以使得modal窗口在点击按钮都自动dismiss-->
                     确认要注销登录吗？
-                    <button type="button" style="margin-top: 50px;font-size: 16px" class="btn btn-danger btn-block"
+                    <button type="button" style="margin-top: 50px;font-size: 18px" class="btn btn-danger btn-block"
                             v-on:click="onConfirmLogOut" >确 定
                     </button >
                 </div >
